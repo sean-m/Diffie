@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diffie", "Diffie\Diffie.csproj", "{3449FDDE-D4AC-46A5-BD60-E6E92B7B5572}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diffie", "Diffie.csproj", "{3449FDDE-D4AC-46A5-BD60-E6E92B7B5572}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
