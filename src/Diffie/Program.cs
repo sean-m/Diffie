@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Dynamic;
 using System.Net;
 using JsonDiffer;
@@ -5,8 +6,10 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Linq;
 
 using static StorageConverter;
+using Diffie;
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
@@ -24,21 +27,28 @@ app.Use(async (context, next) =>
     await next(context);
 });
 
+var prototype = new DiffJob();
+app.MapGet("/diff", () => prototype);
 
-app.MapPost("/", (List<dynamic> input) => {
-    if (input.Count < 2)
-        throw new HttpRequestException("One of the inputs is empty. Must be a list with two objects.", null, HttpStatusCode.BadRequest);
+app.MapPost("/diff", (DiffJob input) => {
+    if (input.Left == null || input.Right == null)
+        throw new HttpRequestException("One of the inputs is empty. Must be a DiffJob object payload.", null, HttpStatusCode.BadRequest);
 
-    var firstText = input?.FirstOrDefault()?.ToString();
+    var firstText = input?.Left?.ToString();
     var first = JToken.Parse(firstText);
 
-    var secondText = input?.Skip(1)?.FirstOrDefault()?.ToString();
+    var secondText = input?.Right?.ToString();
     var second = JToken.Parse(secondText);
-    
-    return JsonHelper.Difference(first, second, showOriginalValues:true).ToString();
+    var mode = input.DetailedOutput ? OutputMode.Detailed : OutputMode.Symbol;
+    bool showInitial = (bool)input?.ShowInitialValues;
+
+    return JsonHelper.Difference(first, second, outputMode:mode, showOriginalValues:showInitial).ToString();
 });
 
+
 app.MapGet("/now", () => DateTime.UtcNow);
+
+app.Map("/", () => "Ok");
 
 app.Run();
 
